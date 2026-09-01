@@ -89,17 +89,4 @@ curl -X POST https://hook.eu1.make.com/24rceje4juhqj9w6cjdeq73em37nmm2l \
 * **Telegram:** Notification received in chat via `@Kaiser_47bot`.
 * **Twilio:** Outbound SMS delivered to recipient phone.
 
----
 
-## 💼 Resume Bullet & Recruiter Talking Points
-
-### Resume Bullet:
-> **"Architected and deployed a cloud middleware service integrating CRM and telephony webhooks, featuring idempotent duplicate elimination, structured event audit logging, and automated Telegram incident alerting — reducing lead response time to under 1 minute."**
-
-### Key Interview Discussion Points:
-1. **Handling Webhook Retries & Idempotency:**
-   > *"Inbound webhooks frequently experience network retries. By enforcing an upsert policy on unique email identifiers, our middleware guarantees that retried requests update existing records rather than polluting the CRM with duplicates."*
-2. **Resilience & Dead-Letter Handling:**
-   > *"When external APIs experience intermittent downtime, standard webhooks fail silently. Our architecture catches errors at the CRM layer, preserves the raw payload with error traces in our audit store, and alerts operations in real time."*
-3. **Decoupled Architecture:**
-   > *"The middleware unifies independent systems (Web forms, CRM, Messaging, and Telephony) while maintaining clean separation of concerns and auditability."*
