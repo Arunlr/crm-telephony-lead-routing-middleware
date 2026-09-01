@@ -1,0 +1,138 @@
+{
+  "name": "CRM-to-Telephony Lead Routing Middleware",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 3640767,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 }
+      }
+    },
+    {
+      "id": 2,
+      "module": "zohocrm:upsertALead",
+      "version": 3,
+      "parameters": {
+        "__IMTCONN__": 10399577
+      },
+      "mapper": {
+        "Last_Name": "{{1.name}}",
+        "Email": "{{1.email}}",
+        "Phone": "{{1.phone}}",
+        "Company": "{{1.source}} Lead Enquiry",
+        "duplicate_check_fields": ["Email"]
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 }
+      },
+      "onerror": [
+        {
+          "id": 3,
+          "module": "datastore:AddRecord",
+          "version": 1,
+          "parameters": {
+            "datastore": 176761
+          },
+          "mapper": {
+            "overwrite": false,
+            "data": {
+              "lead_name": "{{1.name}}",
+              "lead_email": "{{1.email}}",
+              "lead_phone": "{{1.phone}}",
+              "source": "{{1.source}}",
+              "status": "failed",
+              "zoho_lead_id": "",
+              "error_message": "{{2.message}}",
+              "timestamp": "{{now}}"
+            }
+          },
+          "metadata": {
+            "designer": { "x": 300, "y": 150 }
+          }
+        },
+        {
+          "id": 5,
+          "module": "telegram:SendReplyMessage",
+          "version": 1,
+          "parameters": {
+            "__IMTCONN__": 10404685
+          },
+          "mapper": {
+            "chatId": "5554917309",
+            "parseMode": "Markdown",
+            "text": "🚨 *LEAD PROCESSING ERROR*\n\n*Lead:* {{1.name}}\n*Email:* {{1.email}}\n*Source:* {{1.source}}\n*Error:* `{{2.message}}`\n*Timestamp:* {{now}}"
+          },
+          "metadata": {
+            "designer": { "x": 550, "y": 150 }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "module": "datastore:AddRecord",
+      "version": 1,
+      "parameters": {
+        "datastore": 176761
+      },
+      "mapper": {
+        "overwrite": false,
+        "data": {
+          "lead_name": "{{1.name}}",
+          "lead_email": "{{1.email}}",
+          "lead_phone": "{{1.phone}}",
+          "source": "{{1.source}}",
+          "status": "success",
+          "zoho_lead_id": "{{2.id}}",
+          "error_message": "",
+          "timestamp": "{{now}}"
+        }
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 0 }
+      }
+    },
+    {
+      "id": 6,
+      "module": "telegram:SendReplyMessage",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": 10404685
+      },
+      "mapper": {
+        "chatId": "5554917309",
+        "parseMode": "Markdown",
+        "text": "🎯 *NEW LEAD RECEIVED & ROUTED*\n\n*Name:* {{1.name}}\n*Email:* {{1.email}}\n*Phone:* {{1.phone}}\n*Source:* {{1.source}}\n*Zoho Lead ID:* `{{2.id}}`\n*Status:* Synchronized ✅"
+      },
+      "metadata": {
+        "designer": { "x": 850, "y": 0 }
+      }
+    },
+    {
+      "id": 7,
+      "module": "twilio:ActionSendMessage",
+      "version": 1,
+      "parameters": {
+        "account": 10402819
+      },
+      "mapper": {
+        "to": "{{1.phone}}",
+        "from": "+17372508034",
+        "body": "Thank you! Order #ORD{{2.id}} confirmed. You'll get a message when it ships. Test message from Twilio."
+      },
+      "metadata": {
+        "designer": { "x": 1100, "y": 0 }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1
+  }
+}

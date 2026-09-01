@@ -1,0 +1,21 @@
+{
+  "name": "crm-telephony-lead-routing-middleware",
+  "version": "1.0.0",
+  "description": "Production-ready CRM-to-Telephony Lead Routing Middleware with idempotency, audit logging, and dual-branch error alerting.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_runner.js"
+  },
+  "keywords": [
+    "middleware",
+    "zoho-crm",
+    "twilio",
+    "telegram",
+    "webhooks",
+    "idempotency",
+    "make"
+  ],
+  "author": "Maruti Laxman Rudrakshi",
+  "license": "MIT"
+}
